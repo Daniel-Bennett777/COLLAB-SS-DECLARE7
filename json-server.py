@@ -83,7 +83,7 @@ class JSONServer(HandleRequests):
             return status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
 
     def expand_response(self, url, view, expand_param):
-        if expand_param != "":
+        if expand_param is not None:
             response, http_status = view.get_expanded(self, url["pk"])
         else:
             response, http_status = view.get(self, url["pk"])

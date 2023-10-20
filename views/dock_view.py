@@ -1,6 +1,6 @@
 import json
 from nss_handler import status
-from repository import db_get_single, db_get_all, db_delete, db_update
+from repository import db_get_single, db_get_all, db_delete, db_update, db_create
 
 class DocksView():
 
@@ -51,3 +51,17 @@ class DocksView():
             return handler.response("", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value)
         else:
             return handler.response("", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
+    def insert(self, handler, dock_data):
+        sql = """
+        INSERT INTO Dock
+        VALUES(null, ?,?)
+                
+        """
+                
+        new_item = db_create(sql,(dock_data['location'], dock_data['capacity']))
+        
+        if new_item > 0:
+            return handler.response("", status.HTTP_201_SUCCESS_CREATED.value)
+        else:
+            return handler.response("", status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value)
+        
