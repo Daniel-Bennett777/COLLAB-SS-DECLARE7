@@ -1,4 +1,3 @@
-import sqlite3
 import json
 from nss_handler import status
 from repository import db_get_single, db_get_all, db_delete, db_update, db_create
@@ -46,3 +45,18 @@ class ShippingShipsView():
             return handler.response("", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value)
         else:
             return handler.response("", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
+
+    def insert(self, handler, ship_data):
+        sql = """
+        INSERT INTO Ship 
+        VALUES(null, ?,?)
+                
+        """
+                
+        new_item = db_create(sql,(ship_data['name'], ship_data['hauler_id']))
+        
+        if new_item > 0:
+            return handler.response("", status.HTTP_201_SUCCESS_CREATED.value)
+        else:
+            return handler.response("", status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value)
+        
