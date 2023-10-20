@@ -12,11 +12,10 @@ class JSONServer(HandleRequests):
     def do_GET(self):
         url = self.parse_url(self.path)
         view = self.determine_view(url)
+        expand_param = url["query_params"].get("_expand")
 
-        try:
-            view.get(self, url["pk"])
-        except AttributeError:
-            return self.response("No view for that route", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
+        self.expand_response(url, view, expand_param)
+
 
     def do_PUT(self):
         url = self.parse_url(self.path)
@@ -83,7 +82,17 @@ class JSONServer(HandleRequests):
         except KeyError:
             return status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
 
+    def expand_response(self, url, view, expand_param):
+        if expand_param != "":
+            response, http_status = view.get_expanded(self, url["pk"])
+        else:
+            response, http_status = view.get(self, url["pk"])
+        if response is not None:
+            response = json.dumps(response)
 
+        return self.response(response, http_status)
+
+        
 
 
 
