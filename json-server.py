@@ -84,16 +84,11 @@ class JSONServer(HandleRequests):
 
     def expand_response(self, url, view, expand_param):
         if expand_param is not None:
-            response, http_status = view.get_expanded(self, url["pk"])
+            response = view.get_expanded(self, url["pk"])
         else:
-            response, http_status = view.get(self, url["pk"])
+            response = view.get(self, url["pk"])
         if response is not None:
             response = json.dumps(response)
-
-        return self.response(response, http_status)
-
-        
-
 
 
 
