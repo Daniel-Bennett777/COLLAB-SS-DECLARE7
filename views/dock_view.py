@@ -53,15 +53,20 @@ class DocksView():
             return handler.response("", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
     def insert(self, handler, dock_data):
         sql = """
-        INSERT INTO Dock
-        VALUES(null, ?,?)
-                
+        INSERT INTO Dock (location, capacity) VALUES (?, ?)
         """
-                
-        new_item = db_create(sql,(dock_data['location'], dock_data['capacity']))
+    
+        new_item = db_create(sql, (dock_data['location'], dock_data['capacity']))
+    
+        if new_item is not None:
+        # Build a response dictionary with the created resource's ID
+            response_data = {
+                "id": new_item,
+                "location": dock_data['location'],
+                "capacity": dock_data['capacity']
+            }
         
-        if new_item > 0:
-            return handler.response("", status.HTTP_201_SUCCESS_CREATED.value)
+            return handler.response(json.dumps(response_data), status.HTTP_201_SUCCESS_CREATED.value)
         else:
             return handler.response("", status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value)
         
