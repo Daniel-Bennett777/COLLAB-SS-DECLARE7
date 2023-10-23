@@ -34,10 +34,8 @@ class JSONServer(HandleRequests):
         # Get the request body
         # Invoke the correct method on the view
         # Make sure you handle the AttributeError in case the client requested a route that you don't support
-        try:
-            view.insert(self, self.get_request_body())
-        except AttributeError:
-            return self.response("No view for that route", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
+        view.insert(self, self.get_request_body())
+        
         # Once you implement this method, delete the following line of code
         # return self.response("", status.HTTP_405_UNSUPPORTED_METHOD.value)
 

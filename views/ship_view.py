@@ -54,9 +54,17 @@ class ShippingShipsView():
         """
                 
         new_item = db_create(sql,(ship_data['name'], ship_data['hauler_id']))
+
+        if new_item is not None:
+            response_data =  {
+                "id" : new_item,
+                "name": ship_data ['name'],
+                "hauler_id": ship_data ['hauler_id']
+
+            }
         
         if new_item > 0:
-            return handler.response("", status.HTTP_201_SUCCESS_CREATED.value)
+            return handler.response(json.dumps(response_data), status.HTTP_201_SUCCESS_CREATED.value)
         else:
-            return handler.response("", status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value)
+            return handler.response("BAD REQUEST", status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value)
         
