@@ -3,7 +3,51 @@ from nss_handler import status
 from repository import db_get_single, db_get_all, db_delete, db_update, db_create
 
 class ShippingShipsView():
+    def get_expanded(self, handler, pk):
+        if pk != 0:
+            sql = """
+            SELECT s.id, s.name, s.hauler_id, h.name AS hauler_name
+            FROM Ship s
+            LEFT JOIN Hauler h ON s.hauler_id = h.id
+            WHERE s.id = ?
+            """
+            query_results = db_get_single(sql, pk)
 
+            if query_results:
+                ship_data = dict(query_results)
+                response = {
+                    "id": ship_data["id"],
+                    "name": ship_data["name"],
+                    "hauler_id": ship_data["hauler_id"],
+                    "hauler_name": ship_data["hauler_name"]
+                }
+                return handler.response(json.dumps(response), status.HTTP_200_SUCCESS.value)
+            else:
+                return "Error", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
+        else:
+            sql = """
+            SELECT s.id, s.name, s.hauler_id, h.name AS hauler_name
+            FROM Ship s
+            LEFT JOIN Hauler h ON s.hauler_id = h.id
+            """
+            query_results = db_get_all(sql)
+
+            expanded_ships = []
+
+            for row in query_results:
+                ship_data = dict(row)
+                response = {
+                    "id": ship_data["id"],
+                    "name": ship_data["name"],
+                    "hauler_id": ship_data["hauler_id"],
+                    "hauler_name": ship_data["hauler_name"]
+                }
+                expanded_ships.append(response)
+
+            if expanded_ships:
+                return handler.response(json.dumps(expanded_ships), status.HTTP_200_SUCCESS.value)
+            else:
+                return handler.response("Error", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
     def get(self, handler, pk):
         if pk != 0:
             sql = "SELECT s.id, s.name, s.hauler_id FROM Ship s WHERE s.id = ?"
